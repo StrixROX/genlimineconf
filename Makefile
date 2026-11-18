@@ -83,7 +83,9 @@ install: all
 
 # Mirrors install: removes exactly the files dist/ would place, then
 # prunes directories left empty. rmdir only succeeds on empty dirs, so
-# anything still holding real boot entries or user confs is left alone.
+# anything still holding user confs is left alone — except the entries
+# dir, which is generated state, not user data, so it's force-wiped.
 uninstall: all
 	find dist -type f | sed 's|^dist||' | while read -r f; do rm -fv "$(DESTDIR)$$f"; done
+	rm -rf "$(DESTDIR)$(ENTRIESDIR_PATH)/$(ENTRIESDIR_NAME)"
 	find dist -type d | sort -r | sed 's|^dist||' | while read -r d; do rmdir "$(DESTDIR)$$d" 2>/dev/null || true; done
