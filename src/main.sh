@@ -2,7 +2,7 @@
 
 cmd="$1"; shift
 
-cmd_dir="$LIBDIR/cmd"
+cmd_dir="$LIBDIR_PATH/cmd"
 case $cmd in
   add-entry)
     source "$cmd_dir/generate_boot_entry.sh"
