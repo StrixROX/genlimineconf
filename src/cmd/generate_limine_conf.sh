@@ -48,7 +48,7 @@ generate_limine_conf() {
     # write all boot entries
     # in reverse lexical order
     local all_boot_entries="$(ls -rdp $entriesdir/*entry)"
-    cat "$all_boot_entries" >> $limine_conf
+    cat $all_boot_entries >> $limine_conf
 
     echo "Info: Generated limine config: $limine_conf"
   }
