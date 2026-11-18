@@ -44,7 +44,7 @@ init() {
     echo "default_entry: 2" >> "$OPTIONS_CONF"
     echo "remember_last_entry: yes" >> "$OPTIONS_CONF"
     echo "mouse: no" >> "$OPTIONS_CONF"
-    
+
     echo "Info: Generated blank limine config options: $OPTIONS_CONF"
   fi
 
