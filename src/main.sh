@@ -17,6 +17,10 @@ case $cmd in
     source "$LIBEXECDIR_PATH/generate_limine_conf.sh"
     generate_limine_conf "$@"
     ;;
+  refresh)
+    source "$LIBEXECDIR_PATH/refresh_entries.sh"
+    refresh_entries "$@"
+    ;;
   *)
     >&2 echo "Error: Invalid command: $cmd"
     exit 2
