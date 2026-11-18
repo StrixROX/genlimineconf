@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 init_check() {
-  local check() {
+  check() {
     # check if limine.conf exists
     local limine_conf_path=$(get_limine_conf_path 2>/dev/null)
 
