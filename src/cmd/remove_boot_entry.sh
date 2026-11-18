@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+
+source "$LIBEXECDIR_PATH/lib/01-utils.sh"
+
 remove_boot_entry() {
   if [ -z "$1" ]; then
     >&2 echo "Error: Missing arg: 1: pkgname"
@@ -9,15 +13,15 @@ remove_boot_entry() {
     exit 1
   fi
 
-  local pkgname=$1
-  local version=$2
+  local pkgname="$1"
+  local version="$2"
 
   init_check
 
-  local entriesdir_path="${ENTRIESDIR_PATH:-'/var/lib/genlimineconf'}"
-  local entriesdir_name="${ENTRIESDIR_NAME:-'entries'}"
-  local entriesdir="$entriesdir_path/$entriesdir_name"
+  local ENTRIESDIR_PATH="@ENTRIESDIR_PATH@"
+  local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
 
+  local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
   local entry="$entriesdir/${pkgname}_${version}.entry"
 
   if [ -f "$entry" ]; then

@@ -7,11 +7,13 @@
 PKGNAME="$1"
 VERSION="$2"
 
-executable="$EXEC_DIR/genlimineconf"
+EXECDIR_PATH="@EXECDIR_PATH@"
 
-if [ ! -x "$executable" ]; then
+genlimineconf="$EXECDIR_PATH/genlimineconf"
+
+if [ ! -x "$genlimineconf" ]; then
 	exit 0
 fi
 
-${executable} remove-entry ${KERNEL_NAME} ${VERSION}
-${executable} generate
+${genlimineconf} remove-entry @KERNEL_NAME@ ${VERSION}
+${genlimineconf} generate

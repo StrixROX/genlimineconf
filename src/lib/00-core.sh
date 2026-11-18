@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
 get_limine_conf_path() {
+  #
+  # Finds "limine.conf" and returns the path
+  # of parent dir
+  #
+
   local filename='limine.conf'
 
   local search_paths=(
@@ -13,7 +18,7 @@ get_limine_conf_path() {
   local path
   for path in "${search_paths[@]}"; do
     if [ -f "$path/$filename" ]; then
-      echo $path
+      echo "$path"
       return 0
     fi
   done
@@ -29,6 +34,6 @@ get_root_part_uuid() {
 
   local root_part_uuid="$(findmnt -n -o UUID /)"
 
-  echo $root_part_uuid
+  echo "$root_part_uuid"
 }
 

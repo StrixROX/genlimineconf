@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+
+source "$LIBEXECDIR_PATH/lib/00-core.sh"
+
 init_check() {
   check() {
     # check if limine.conf exists
@@ -11,18 +15,20 @@ init_check() {
     fi
 
     # check if $confdir exists
-    local confdir_path="${CONFDIR_PATH:-'/etc/genlimineconf'}"
-    local confdir_name="${CONFDIR_NAME:-'limine.conf.d'}"
-    local confdir="$confdir_path/$confdir_name"
+    local CONFDIR_PATH="@CONFDIR_PATH@"
+    local CONFDIR_NAME="@CONFDIR_NAME@"
+
+    local confdir="$CONFDIR_PATH/$CONFDIR_NAME"
 
     if [ ! -d "$confdir" ]; then
       >&2 echo "Error: Missing config directory: $confdir/"
     fi
 
     # check if $entriesdir exists
-    local entriesdir_path="${ENTRIESDIR_PATH:-'/var/lib/genlimineconf'}"
-    local entriesdir_name="${ENTRIESDIR_NAME:-'entries'}"
-    local entriesdir="$entriesdir_path/$entriesdir_name"
+    local ENTRIESDIR_PATH="@ENTRIESDIR_PATH@"
+    local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
+
+    local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
 
     if [ ! -d "$entriesdir" ]; then
       >&2 echo "Error: Missing boot entries directory: $entriesdir/"
