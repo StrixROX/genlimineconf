@@ -38,7 +38,7 @@ STATIC_OUT := dist$(CONFDIR_PATH)/$(CONFDIR_NAME)/options.conf
 
 ENTRIESDIR_OUT := dist$(ENTRIESDIR_PATH)/$(ENTRIESDIR_NAME)
 
-.PHONY: all clean install
+.PHONY: all clean install uninstall
 
 all: $(MAIN_OUT) $(LIB_OUT) $(CMD_OUT) $(HOOK_INSTALL_OUT) $(HOOK_REMOVE_OUT) $(STATIC_OUT) $(ENTRIESDIR_OUT)
 
@@ -80,3 +80,10 @@ clean:
 
 install: all
 	cp -r dist/. $(DESTDIR)/
+
+# Mirrors install: removes exactly the files dist/ would place, then
+# prunes directories left empty. rmdir only succeeds on empty dirs, so
+# anything still holding real boot entries or user confs is left alone.
+uninstall: all
+	find dist -type f | sed 's|^dist||' | while read -r f; do rm -fv "$(DESTDIR)$$f"; done
+	find dist -type d | sort -r | sed 's|^dist||' | while read -r d; do rmdir "$(DESTDIR)$$d" 2>/dev/null || true; done
