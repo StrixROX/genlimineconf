@@ -1,7 +1,8 @@
 # --- build-time configuration, override with: make VAR=value ---
 PREFIX          ?= /usr
 BINDIR          ?= $(PREFIX)/bin
-LIBEXECDIR      ?= $(PREFIX)/libexec/genlimineconf
+CMDDIR          ?= $(PREFIX)/libexec/genlimineconf
+LIBDIR          ?= $(CMDDIR)/lib
 KERNELHOOKDIR   ?= /etc/kernel.d
 CONFDIR_PATH    ?= /etc/genlimineconf
 CONFDIR_NAME    ?= limine.conf.d
@@ -14,7 +15,8 @@ DESTDIR         ?=
 
 -include config.mk
 
-SUBST = sed -e 's|@LIBEXECDIR_PATH@|$(LIBEXECDIR)|g' \
+SUBST = sed -e 's|@LIBDIR_PATH@|$(LIBDIR)|g' \
+            -e 's|@CMDDIR_PATH@|$(CMDDIR)|g' \
             -e 's|@EXECDIR_PATH@|$(BINDIR)|g' \
             -e 's|@KERNEL_NAME@|$(KERNEL_NAME)|g' \
             -e 's|@KERNEL_PATH@|$(KERNEL_PATH)|g' \
@@ -24,10 +26,10 @@ SUBST = sed -e 's|@LIBEXECDIR_PATH@|$(LIBEXECDIR)|g' \
             -e 's|@ENTRIESDIR_NAME@|$(ENTRIESDIR_NAME)|g'
 
 LIB_SRC := $(wildcard src/lib/*.sh)
-LIB_OUT := $(patsubst src/lib/%,dist$(LIBEXECDIR)/lib/%,$(LIB_SRC))
+LIB_OUT := $(patsubst src/lib/%,dist$(LIBDIR)/%,$(LIB_SRC))
 
 CMD_SRC := $(wildcard src/cmd/*.sh)
-CMD_OUT := $(patsubst src/cmd/%,dist$(LIBEXECDIR)/%,$(CMD_SRC))
+CMD_OUT := $(patsubst src/cmd/%,dist$(CMDDIR)/%,$(CMD_SRC))
 
 MAIN_OUT := dist$(BINDIR)/genlimineconf
 
@@ -45,12 +47,12 @@ $(MAIN_OUT): src/main.sh
 	$(SUBST) $< > $@
 	chmod 755 $@
 
-dist$(LIBEXECDIR)/lib/%.sh: src/lib/%.sh
+dist$(LIBDIR)/%.sh: src/lib/%.sh
 	@mkdir -p $(dir $@)
 	$(SUBST) $< > $@
 	chmod 644 $@
 
-dist$(LIBEXECDIR)/%.sh: src/cmd/%.sh
+dist$(CMDDIR)/%.sh: src/cmd/%.sh
 	@mkdir -p $(dir $@)
 	$(SUBST) $< > $@
 	chmod 755 $@

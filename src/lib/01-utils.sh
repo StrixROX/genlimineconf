@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+LIBDIR_PATH="@LIBDIR_PATH@"
 
-source "$LIBEXECDIR_PATH/lib/00-core.sh"
+source "$LIBDIR_PATH/00-core.sh"
 
 init_check() {
   #

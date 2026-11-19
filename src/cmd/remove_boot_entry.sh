@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+LIBDIR_PATH="@LIBDIR_PATH@"
 
-source "$LIBEXECDIR_PATH/lib/01-utils.sh"
+source "$LIBDIR_PATH/01-utils.sh"
 
 remove_boot_entry() {
   if [ -z "$1" ]; then

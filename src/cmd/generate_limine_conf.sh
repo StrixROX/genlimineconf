@@ -1,22 +1,25 @@
 #!/usr/bin/env bash
 
-LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+LIBDIR_PATH="@LIBDIR_PATH@"
+CMDDIR_PATH="@CMDDIR_PATH@"
 
-# TODO: would rather make separate make vars for libdir and cmddir
-source "$LIBEXECDIR_PATH/lib/00-core.sh"
-source "$LIBEXECDIR_PATH/lib/01-utils.sh"
-source "$LIBEXECDIR_PATH/refresh_entries.sh"
+source "$LIBDIR_PATH/00-core.sh"
+source "$LIBDIR_PATH/01-utils.sh"
+source "$CMDDIR_PATH/refresh_entries.sh"
 
 generate_limine_conf() {
   # create a temp dir for storing the entries
   # (makefile gives the temp dir template)
-  local ENTRIESDIR_PATH="$(mktemp -d "@ENTRIESDIR_PATH@")"
+  local ENTRIESDIR_PATH="$(mktemp -d '@ENTRIESDIR_PATH@')"
   local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
 
   # remove the temp dir when this function finishes
   trap 'rm -rf "$ENTRIESDIR_PATH"' RETURN
 
   local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
+
+  # make the entriesdir
+  mkdir -p "$entriesdir"
 
   # TODO: should prolly rename this to scan_for_kernels
   # but this is technically correct too...
