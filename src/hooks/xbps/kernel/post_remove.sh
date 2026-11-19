@@ -7,9 +7,7 @@
 PKGNAME="$1"
 VERSION="$2"
 
-EXECDIR_PATH="@EXECDIR_PATH@"
-
-genlimineconf="$EXECDIR_PATH/genlimineconf"
+genlimineconf="@BINDIR@/genlimineconf"
 
 if [ ! -x "$genlimineconf" ]; then
 	exit 0

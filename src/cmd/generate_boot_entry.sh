@@ -19,11 +19,9 @@ generate_boot_entry() {
 
   init_check
 
-  local ENTRIESDIR_PATH="$ENTRIESDIR_PATH" # environment supplied var
-  local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
+  local ENTRIESDIR="$ENTRIESDIR" # environment supplied var
 
-  local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
-  local entry="$entriesdir/${pkgname}_${version}.entry"
+  local entry="$ENTRIESDIR/${pkgname}_${version}.entry"
 
   local root_part_uuid="$(get_root_part_uuid)"
 

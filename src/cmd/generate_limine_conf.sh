@@ -10,23 +10,17 @@ source "$CMDDIR_PATH/refresh_entries.sh"
 generate_limine_conf() {
   # create a temp dir for storing the entries
   # (makefile gives the temp dir template)
-  local ENTRIESDIR_PATH="$(mktemp -d '@ENTRIESDIR_PATH@')"
-  local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
+  local ENTRIESDIR="$(mktemp -d "@ENTRIESDIR@")"
 
-  local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
-
-  # remove the temp dir when this function finishes
-  trap 'rm -rf "$ENTRIESDIR_PATH"' RETURN
-
-  # make the entriesdir
-  mkdir -p "$entriesdir"
+  # remove the entries dir when this function finishes
+  trap 'rm -rf "$ENTRIESDIR"' RETURN
 
   # TODO: should prolly rename this to scan_for_kernels
   # but this is technically correct too...
   refresh_entries
 
-  if ! ls $entriesdir/*.entry >/dev/null 2>&1; then
-    >&2 echo "Error: Missing: boot entries in: $entriesdir"
+  if ! ls "$ENTRIESDIR"/*.entry >/dev/null 2>&1; then
+    >&2 echo "Error: Missing: boot entries in: $ENTRIESDIR"
     exit 1
   fi
 
@@ -45,7 +39,7 @@ generate_limine_conf() {
     # write user options
     local CONFDIR="@CONFDIR@"
 
-    local all_user_confs="$(ls -dp $CONFDIR/*.conf 2>/dev/null)"
+    local all_user_confs="$(ls -dp "$CONFDIR"/*.conf 2>/dev/null)"
     if [ -n "$all_user_confs" ]; then
       cat $all_user_confs >> $limine_conf
     fi
@@ -54,7 +48,7 @@ generate_limine_conf() {
     echo '/+Void Linux' >> $limine_conf
 
     # write all boot entries in reverse lexical order
-    local all_boot_entries="$(ls -rdp $entriesdir/*entry)"
+    local all_boot_entries="$(ls -rdp "$ENTRIESDIR"/*.entry)"
     cat $all_boot_entries >> $limine_conf
 
     echo "Info: Generated limine config: $limine_conf"

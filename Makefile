@@ -5,8 +5,7 @@ CMDDIR          ?= $(PREFIX)/libexec/genlimineconf
 LIBDIR          ?= $(CMDDIR)/lib
 KERNELHOOKDIR   ?= /etc/kernel.d
 CONFDIR         ?= /etc/genlimineconf/limine.conf.d
-ENTRIESDIR_PATH ?= /tmp/genlimineconf-XXXXXX
-ENTRIESDIR_NAME ?= entries
+ENTRIESDIR      ?= /tmp/genlimineconf-XXXXXX
 KERNEL_NAME     ?= linux
 KERNEL_PATH     ?=
 
@@ -16,12 +15,11 @@ DESTDIR         ?=
 
 SUBST = sed -e 's|@LIBDIR_PATH@|$(LIBDIR)|g' \
             -e 's|@CMDDIR_PATH@|$(CMDDIR)|g' \
-            -e 's|@EXECDIR_PATH@|$(BINDIR)|g' \
+            -e 's|@BINDIR@|$(BINDIR)|g' \
             -e 's|@KERNEL_NAME@|$(KERNEL_NAME)|g' \
             -e 's|@KERNEL_PATH@|$(KERNEL_PATH)|g' \
             -e 's|@CONFDIR@|$(CONFDIR)|g' \
-            -e 's|@ENTRIESDIR_PATH@|$(ENTRIESDIR_PATH)|g' \
-            -e 's|@ENTRIESDIR_NAME@|$(ENTRIESDIR_NAME)|g'
+            -e 's|@ENTRIESDIR@|$(ENTRIESDIR)|g'
 
 LIB_SRC := $(wildcard src/lib/*.sh)
 LIB_OUT := $(patsubst src/lib/%,dist$(LIBDIR)/%,$(LIB_SRC))
@@ -78,7 +76,7 @@ install: all
 
 # Mirrors install: removes the files dist/ would place, then
 # prunes directories left empty. Does not touch user-generated
-# files (e.g., those in CONFDIR) but removes "CONFDIR/options.conf".
+# files (e.g., those in CONFDIR) but removes "CONFDIR/options.conf"
 uninstall: all
 	find dist -type f | sed 's|^dist||' | while read -r f; do rm -fv "$(DESTDIR)$$f"; done
 	find dist -type d | sort -r | sed 's|^dist||' | while read -r d; do rmdir "$(DESTDIR)$$d" 2>/dev/null || true; done

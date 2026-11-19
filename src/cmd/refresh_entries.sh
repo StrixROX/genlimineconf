@@ -10,13 +10,10 @@ source "$CMDDIR_PATH/generate_boot_entry.sh"
 refresh_entries() {
   init_check
 
-  local ENTRIESDIR_PATH="$ENTRIESDIR_PATH" # environment supplied var
-  local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
-
-  local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
+  local ENTRIESDIR="$ENTRIESDIR" # environment supplied var
 
   # clean up stale entries before rebuilding from what's on disk
-  rm -f "$entriesdir"/*.entry
+  rm -f "$ENTRIESDIR"/*.entry
 
   local KERNEL_NAME="@KERNEL_NAME@"
   local KERNEL_PATH="@KERNEL_PATH@"
