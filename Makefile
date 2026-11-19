@@ -1,12 +1,11 @@
 # --- build-time configuration, override with: make VAR=value ---
 PREFIX          ?= /usr
 BINDIR          ?= $(PREFIX)/bin
-LIBEXECDIR      ?= $(PREFIX)/libexec/genlimineconf
+CMDDIR          ?= $(PREFIX)/libexec/genlimineconf
+LIBDIR          ?= $(CMDDIR)/lib
 KERNELHOOKDIR   ?= /etc/kernel.d
-CONFDIR_PATH    ?= /etc/genlimineconf
-CONFDIR_NAME    ?= limine.conf.d
-ENTRIESDIR_PATH ?= /var/lib/genlimineconf
-ENTRIESDIR_NAME ?= entries
+CONFDIR         ?= /etc/genlimineconf/limine.conf.d
+ENTRIESDIR      ?= /tmp/genlimineconf-XXXXXX
 KERNEL_NAME     ?= linux
 KERNEL_PATH     ?=
 
@@ -14,51 +13,45 @@ DESTDIR         ?=
 
 -include config.mk
 
-SUBST = sed -e 's|@LIBEXECDIR_PATH@|$(LIBEXECDIR)|g' \
-            -e 's|@EXECDIR_PATH@|$(BINDIR)|g' \
+SUBST = sed -e 's|@LIBDIR_PATH@|$(LIBDIR)|g' \
+            -e 's|@CMDDIR_PATH@|$(CMDDIR)|g' \
+            -e 's|@BINDIR@|$(BINDIR)|g' \
             -e 's|@KERNEL_NAME@|$(KERNEL_NAME)|g' \
             -e 's|@KERNEL_PATH@|$(KERNEL_PATH)|g' \
-            -e 's|@CONFDIR_PATH@|$(CONFDIR_PATH)|g' \
-            -e 's|@CONFDIR_NAME@|$(CONFDIR_NAME)|g' \
-            -e 's|@ENTRIESDIR_PATH@|$(ENTRIESDIR_PATH)|g' \
-            -e 's|@ENTRIESDIR_NAME@|$(ENTRIESDIR_NAME)|g'
+            -e 's|@CONFDIR@|$(CONFDIR)|g' \
+            -e 's|@ENTRIESDIR@|$(ENTRIESDIR)|g'
 
 LIB_SRC := $(wildcard src/lib/*.sh)
-LIB_OUT := $(patsubst src/lib/%,dist$(LIBEXECDIR)/lib/%,$(LIB_SRC))
+LIB_OUT := $(patsubst src/lib/%,dist$(LIBDIR)/%,$(LIB_SRC))
 
 CMD_SRC := $(wildcard src/cmd/*.sh)
-CMD_OUT := $(patsubst src/cmd/%,dist$(LIBEXECDIR)/%,$(CMD_SRC))
+CMD_OUT := $(patsubst src/cmd/%,dist$(CMDDIR)/%,$(CMD_SRC))
 
 MAIN_OUT := dist$(BINDIR)/genlimineconf
 
 HOOK_INSTALL_OUT := dist$(KERNELHOOKDIR)/post-install/100-genlimineconf
 HOOK_REMOVE_OUT  := dist$(KERNELHOOKDIR)/post-remove/100-genlimineconf
 
-STATIC_OUT := dist$(CONFDIR_PATH)/$(CONFDIR_NAME)/options.conf
-
-ENTRIESDIR_OUT := dist$(ENTRIESDIR_PATH)/$(ENTRIESDIR_NAME)
+STATIC_OUT := dist$(CONFDIR)/options.conf
 
 .PHONY: all clean install uninstall
 
-all: $(MAIN_OUT) $(LIB_OUT) $(CMD_OUT) $(HOOK_INSTALL_OUT) $(HOOK_REMOVE_OUT) $(STATIC_OUT) $(ENTRIESDIR_OUT)
+all: $(MAIN_OUT) $(LIB_OUT) $(CMD_OUT) $(HOOK_INSTALL_OUT) $(HOOK_REMOVE_OUT) $(STATIC_OUT)
 
 $(MAIN_OUT): src/main.sh
 	@mkdir -p $(dir $@)
 	$(SUBST) $< > $@
 	chmod 755 $@
 
-dist$(LIBEXECDIR)/lib/%.sh: src/lib/%.sh
+dist$(LIBDIR)/%.sh: src/lib/%.sh
 	@mkdir -p $(dir $@)
 	$(SUBST) $< > $@
 	chmod 644 $@
 
-dist$(LIBEXECDIR)/%.sh: src/cmd/%.sh
+dist$(CMDDIR)/%.sh: src/cmd/%.sh
 	@mkdir -p $(dir $@)
 	$(SUBST) $< > $@
-	chmod 755 $@
-
-$(ENTRIESDIR_OUT):
-	install -d $@
+	chmod 644 $@
 
 $(HOOK_INSTALL_OUT): src/hooks/xbps/kernel/post_install.sh
 	@mkdir -p $(dir $@)
@@ -79,14 +72,18 @@ clean:
 	rm -rf dist
 
 install: all
-	cp -r dist/. $(DESTDIR)/
+	if [ ! -d "$(DESTDIR)$(CONFDIR)" ]; then \
+		cp -r dist/. "$(DESTDIR)/"; \
+	else \
+		mv "$(DESTDIR)$(CONFDIR)" "$(DESTDIR)$(CONFDIR).bak"; \
+		cp -r dist/. "$(DESTDIR)/"; \
+		rm -rf "$(DESTDIR)$(CONFDIR)"; \
+		mv "$(DESTDIR)$(CONFDIR).bak" "$(DESTDIR)$(CONFDIR)"; \
+	fi
 
-# Mirrors install: removes the files dist/ would place, then
-# prunes directories left empty. Does not touch user-generated
-# files (e.g., those in CONFDIR_PATH/CONFDIR_NAME) but
-# removes "CONFDIR_PATH/CONFDIR_NAME/options.conf" and
-# "ENTRIESDIR_PATH/ENTRIESDIR_NAME".
-uninstall: all
-	find dist -type f | sed 's|^dist||' | while read -r f; do rm -fv "$(DESTDIR)$$f"; done
-	rm -rf "$(DESTDIR)$(ENTRIESDIR_PATH)/$(ENTRIESDIR_NAME)"
-	find dist -type d | sort -r | sed 's|^dist||' | while read -r d; do rmdir "$(DESTDIR)$$d" 2>/dev/null || true; done
+uninstall:
+	rm -fv "$(DESTDIR)$(BINDIR)/genlimineconf"
+	rm -rfv "$(DESTDIR)$(LIBDIR)"
+	rm -rfv "$(DESTDIR)$(CMDDIR)"
+	rm -fv "$(DESTDIR)$(KERNELHOOKDIR)/post-install/100-genlimineconf"
+	rm -fv "$(DESTDIR)$(KERNELHOOKDIR)/post-remove/100-genlimineconf"

@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 
-LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+LIBDIR_PATH="@LIBDIR_PATH@"
+CMDDIR_PATH="@CMDDIR_PATH@"
 
-source "$LIBEXECDIR_PATH/lib/00-core.sh"
-source "$LIBEXECDIR_PATH/lib/01-utils.sh"
-source "$LIBEXECDIR_PATH/generate_boot_entry.sh"
+source "$LIBDIR_PATH/00-core.sh"
+source "$LIBDIR_PATH/01-utils.sh"
+source "$CMDDIR_PATH/generate_boot_entry.sh"
 
 refresh_entries() {
   init_check
 
-  local ENTRIESDIR_PATH="@ENTRIESDIR_PATH@"
-  local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
-  local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
+  local ENTRIESDIR="$ENTRIESDIR" # environment supplied var
 
   # clean up stale entries before rebuilding from what's on disk
-  rm -f "$entriesdir"/*.entry
+  rm -f "$ENTRIESDIR"/*.entry
 
   local KERNEL_NAME="@KERNEL_NAME@"
   local KERNEL_PATH="@KERNEL_PATH@"

@@ -1,10 +1,24 @@
 #!/usr/bin/env bash
 
-LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+LIBDIR_PATH="@LIBDIR_PATH@"
 
-source "$LIBEXECDIR_PATH/lib/00-core.sh"
+source "$LIBDIR_PATH/00-core.sh"
 
 init_check() {
+  #
+  # Checks if all the required files and directories are present
+  # in their intended places before any other commands/functions
+  # get executed.
+  #
+  # Note: ENTRIESDIR used to be a constant supplied at build
+  # time (pointing to `/var/lib/genlimineconf/entries`), but the
+  # entries were later re-targetted to `/tmp` using `mktemp -d`.
+  # So, ENTRIESDIR is not a runtime environment variable that
+  # needs to be supplied by the user/calling functions.
+  #
+  # TLDR: Always set $ENTRIESDIR env variable.
+  #
+
   check() {
     # check if limine.conf exists
     local limine_conf_path=$(get_limine_conf_path 2>/dev/null)
@@ -15,23 +29,22 @@ init_check() {
     fi
 
     # check if $confdir exists
-    local CONFDIR_PATH="@CONFDIR_PATH@"
-    local CONFDIR_NAME="@CONFDIR_NAME@"
+    local CONFDIR="@CONFDIR@"
 
-    local confdir="$CONFDIR_PATH/$CONFDIR_NAME"
-
-    if [ ! -d "$confdir" ]; then
-      >&2 echo "Error: Missing config directory: $confdir/"
+    if [ ! -d "$CONFDIR" ]; then
+      >&2 echo "Error: Missing config directory: $CONFDIR/"
+      return 1
     fi
 
     # check if $entriesdir exists
-    local ENTRIESDIR_PATH="@ENTRIESDIR_PATH@"
-    local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
+    local ENTRIESDIR="$ENTRIESDIR" # environment supplied var
 
-    local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
-
-    if [ ! -d "$entriesdir" ]; then
-      >&2 echo "Error: Missing boot entries directory: $entriesdir/"
+    if [ -z "$ENTRIESDIR" ]; then
+      >&2 echo "Error: Unset environment variable: ENTRIESDIR"
+      return 1
+    elif [ ! -d "$ENTRIESDIR" ]; then
+      >&2 echo "Error: Missing boot entries directory: $ENTRIESDIR/"
+      return 1
     fi
  }
 

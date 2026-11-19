@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+LIBDIR_PATH="@LIBDIR_PATH@"
 
-source "$LIBEXECDIR_PATH/lib/01-utils.sh"
+source "$LIBDIR_PATH/01-utils.sh"
 
 remove_boot_entry() {
   if [ -z "$1" ]; then
@@ -18,11 +18,9 @@ remove_boot_entry() {
 
   init_check
 
-  local ENTRIESDIR_PATH="@ENTRIESDIR_PATH@"
-  local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
+  local ENTRIESDIR="$ENTRIESDIR" # environment supplied var
 
-  local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
-  local entry="$entriesdir/${pkgname}_${version}.entry"
+  local entry="$ENTRIESDIR/${pkgname}_${version}.entry"
 
   if [ -f "$entry" ]; then
     rm "$entry"

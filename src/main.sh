@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
-LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
+CMDDIR_PATH="@CMDDIR_PATH@"
 
 cmd="$1"; shift
 
 case $cmd in
   add-entry)
-    source "$LIBEXECDIR_PATH/generate_boot_entry.sh"
+    source "$CMDDIR_PATH/generate_boot_entry.sh"
     generate_boot_entry "$@"
     ;;
   remove-entry)
-    source "$LIBEXECDIR_PATH/remove_boot_entry.sh"
+    source "$CMDDIR_PATH/remove_boot_entry.sh"
     remove_boot_entry "$@"
     ;;
   generate)
-    source "$LIBEXECDIR_PATH/generate_limine_conf.sh"
+    source "$CMDDIR_PATH/generate_limine_conf.sh"
     generate_limine_conf "$@"
     ;;
   refresh)
-    source "$LIBEXECDIR_PATH/refresh_entries.sh"
+    source "$CMDDIR_PATH/refresh_entries.sh"
     refresh_entries "$@"
     ;;
   *)
