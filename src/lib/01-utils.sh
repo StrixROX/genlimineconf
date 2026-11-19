@@ -29,13 +29,10 @@ init_check() {
     fi
 
     # check if $confdir exists
-    local CONFDIR_PATH="@CONFDIR_PATH@"
-    local CONFDIR_NAME="@CONFDIR_NAME@"
+    local CONFDIR="@CONFDIR@"
 
-    local confdir="$CONFDIR_PATH/$CONFDIR_NAME"
-
-    if [ ! -d "$confdir" ]; then
-      >&2 echo "Error: Missing config directory: $confdir/"
+    if [ ! -d "$CONFDIR" ]; then
+      >&2 echo "Error: Missing config directory: $CONFDIR/"
       return 1
     fi
 

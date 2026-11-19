@@ -4,8 +4,7 @@ BINDIR          ?= $(PREFIX)/bin
 CMDDIR          ?= $(PREFIX)/libexec/genlimineconf
 LIBDIR          ?= $(CMDDIR)/lib
 KERNELHOOKDIR   ?= /etc/kernel.d
-CONFDIR_PATH    ?= /etc/genlimineconf
-CONFDIR_NAME    ?= limine.conf.d
+CONFDIR         ?= /etc/genlimineconf/limine.conf.d
 ENTRIESDIR_PATH ?= /tmp/genlimineconf-XXXXXX
 ENTRIESDIR_NAME ?= entries
 KERNEL_NAME     ?= linux
@@ -20,8 +19,7 @@ SUBST = sed -e 's|@LIBDIR_PATH@|$(LIBDIR)|g' \
             -e 's|@EXECDIR_PATH@|$(BINDIR)|g' \
             -e 's|@KERNEL_NAME@|$(KERNEL_NAME)|g' \
             -e 's|@KERNEL_PATH@|$(KERNEL_PATH)|g' \
-            -e 's|@CONFDIR_PATH@|$(CONFDIR_PATH)|g' \
-            -e 's|@CONFDIR_NAME@|$(CONFDIR_NAME)|g' \
+            -e 's|@CONFDIR@|$(CONFDIR)|g' \
             -e 's|@ENTRIESDIR_PATH@|$(ENTRIESDIR_PATH)|g' \
             -e 's|@ENTRIESDIR_NAME@|$(ENTRIESDIR_NAME)|g'
 
@@ -36,7 +34,7 @@ MAIN_OUT := dist$(BINDIR)/genlimineconf
 HOOK_INSTALL_OUT := dist$(KERNELHOOKDIR)/post-install/100-genlimineconf
 HOOK_REMOVE_OUT  := dist$(KERNELHOOKDIR)/post-remove/100-genlimineconf
 
-STATIC_OUT := dist$(CONFDIR_PATH)/$(CONFDIR_NAME)/options.conf
+STATIC_OUT := dist$(CONFDIR)/options.conf
 
 .PHONY: all clean install uninstall
 
@@ -80,8 +78,7 @@ install: all
 
 # Mirrors install: removes the files dist/ would place, then
 # prunes directories left empty. Does not touch user-generated
-# files (e.g., those in CONFDIR_PATH/CONFDIR_NAME) but
-# removes "CONFDIR_PATH/CONFDIR_NAME/options.conf".
+# files (e.g., those in CONFDIR) but removes "CONFDIR/options.conf".
 uninstall: all
 	find dist -type f | sed 's|^dist||' | while read -r f; do rm -fv "$(DESTDIR)$$f"; done
 	find dist -type d | sort -r | sed 's|^dist||' | while read -r d; do rmdir "$(DESTDIR)$$d" 2>/dev/null || true; done
