@@ -72,11 +72,18 @@ clean:
 	rm -rf dist
 
 install: all
-	cp -r dist/. $(DESTDIR)/
+	if [ ! -d "$(DESTDIR)$(CONFDIR)" ]; then \
+		cp -r dist/. "$(DESTDIR)/"; \
+	else \
+		mv "$(DESTDIR)$(CONFDIR)" "$(DESTDIR)$(CONFDIR).bak"; \
+		cp -r dist/. "$(DESTDIR)/"; \
+		rm -rf "$(DESTDIR)$(CONFDIR)"; \
+		mv "$(DESTDIR)$(CONFDIR).bak" "$(DESTDIR)$(CONFDIR)"; \
+	fi
 
-# Mirrors install: removes the files dist/ would place, then
-# prunes directories left empty. Does not touch user-generated
-# files (e.g., those in CONFDIR) but removes "CONFDIR/options.conf"
-uninstall: all
-	find dist -type f | sed 's|^dist||' | while read -r f; do rm -fv "$(DESTDIR)$$f"; done
-	find dist -type d | sort -r | sed 's|^dist||' | while read -r d; do rmdir "$(DESTDIR)$$d" 2>/dev/null || true; done
+uninstall:
+	rm -fv "$(DESTDIR)$(BINDIR)/genlimineconf"
+	rm -rfv "$(DESTDIR)$(LIBDIR)"
+	rm -rfv "$(DESTDIR)$(CMDDIR)"
+	rm -fv "$(DESTDIR)$(KERNELHOOKDIR)/post-install/100-genlimineconf"
+	rm -fv "$(DESTDIR)$(KERNELHOOKDIR)/post-remove/100-genlimineconf"
