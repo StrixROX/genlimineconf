@@ -5,6 +5,17 @@ after every kernel update by `xbps-reconfigure` in Void Linux (refer [this](http
 
 > Inspired by [Zesko/limine-entry-tool](https://gitlab.com/Zesko/limine-entry-tool); written in bash because I don't like Java
 
+## Installation
+
+```bash
+git clone https://github.com/StrixROX/genlimineconf.git
+cd genlimineconf
+make
+make install
+```
+
+To remove it from the system, run `make uninstall` from the same directory.
+
 ## Usage
 
 On first install, run:
