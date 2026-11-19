@@ -3,6 +3,8 @@
 Utility program and kernel hooks for updating Limine Bootloader configuration
 after every kernel update by `xbps-reconfigure` in Void Linux.
 
+> Inspired by [Zesko/limine-entry-tool](https://gitlab.com/Zesko/limine-entry-tool); written in bash because I don't like Java
+
 ## Usage
 
 On first install, run:
