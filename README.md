@@ -7,7 +7,7 @@ after every kernel update by `xbps-reconfigure` in Void Linux.
 
 On first install, run:
 
-```
+```bash
 genlimineconf refresh
 genlimineconf generate
 ```
@@ -41,7 +41,7 @@ or they'll be deleted on uninstall.
 
 ## Build
 
-```
+```bash
 make            # same as `make all`
 make all        # builds dist/ — see Makefile for overridable build-time variables (PREFIX, KERNEL_NAME, etc.)
 make install    # installs dist/ onto the system (DESTDIR supported)
@@ -55,3 +55,19 @@ make clean      # removes dist/
 | `clean` | — | `rm -rf dist`. |
 | `install` | `all` | Copies `dist/` onto `$(DESTDIR)/` (or `/` if `DESTDIR` unset). |
 | `uninstall` | `all` | Rebuilds `dist/` to know the current file list, removes every file it would have installed, force-deletes the entries dir regardless of contents, then prunes any directories left empty (so directories still holding user `.conf` files survive). |
+
+## Testing
+
+`src/**/*.sh` are build templates, not runnable scripts — they contain
+literal `@VARNAME@` placeholders substituted by `make`. Sourcing them
+directly from `src/` gives you variables whose value is the literal string
+`@VARNAME@`, not a real path.
+
+Run `make all` first, then source/test against the compiled output instead.
+
+Example:
+```bash
+make all
+source dist/usr/libexec/genlimineconf/lib/00-core.sh
+get_root_part_uuid
+```
