@@ -18,7 +18,7 @@ remove_boot_entry() {
 
   init_check
 
-  local ENTRIESDIR_PATH="@ENTRIESDIR_PATH@"
+  local ENTRIESDIR_PATH="$ENTRIESDIR_PATH" # environment supplied var
   local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
 
   local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"

@@ -2,20 +2,28 @@
 
 LIBEXECDIR_PATH="@LIBEXECDIR_PATH@"
 
+# TODO: would rather make separate make vars for libdir and cmddir
 source "$LIBEXECDIR_PATH/lib/00-core.sh"
 source "$LIBEXECDIR_PATH/lib/01-utils.sh"
+source "$LIBEXECDIR_PATH/refresh_entries.sh"
 
 generate_limine_conf() {
-  init_check
-
-  # check there are entries to parse
-  local ENTRIESDIR_PATH="@ENTRIESDIR_PATH@"
+  # create a temp dir for storing the entries
+  # (makefile gives the temp dir template)
+  local ENTRIESDIR_PATH="$(mktemp -d "@ENTRIESDIR_PATH@")"
   local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
+
+  # remove the temp dir when this function finishes
+  trap 'rm -rf "$ENTRIESDIR_PATH"' RETURN
 
   local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
 
+  # TODO: should prolly rename this to scan_for_kernels
+  # but this is technically correct too...
+  refresh_entries
+
   if ! ls $entriesdir/*.entry >/dev/null 2>&1; then
-    >&2 echo "Error: Missing: boot entries in; $entriesdir"
+    >&2 echo "Error: Missing: boot entries in: $entriesdir"
     exit 1
   fi
 
@@ -39,14 +47,13 @@ generate_limine_conf() {
 
     local all_user_confs="$(ls -dp $confdir/*.conf 2>/dev/null)"
     if [ -n "$all_user_confs" ]; then
-      cat "$all_user_confs" >> $limine_conf
+      cat $all_user_confs >> $limine_conf
     fi
 
-    # add a Void Linux dir
+    # add a "Void Linux" dir to the limine displayed tree
     echo '/+Void Linux' >> $limine_conf
 
-    # write all boot entries
-    # in reverse lexical order
+    # write all boot entries in reverse lexical order
     local all_boot_entries="$(ls -rdp $entriesdir/*entry)"
     cat $all_boot_entries >> $limine_conf
 
@@ -60,5 +67,7 @@ generate_limine_conf() {
     cp "$limine_conf_bak" "$limine_conf"
 
     echo "Info: Restored limine config backup: $limine_conf_bak"
+
+    return 1
   fi
 }

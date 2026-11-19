@@ -15,5 +15,4 @@ if [ ! -x "$genlimineconf" ]; then
 	exit 0
 fi
 
-${genlimineconf} remove-entry @KERNEL_NAME@ ${VERSION}
 ${genlimineconf} generate

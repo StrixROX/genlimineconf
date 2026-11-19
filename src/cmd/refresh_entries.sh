@@ -9,8 +9,9 @@ source "$LIBEXECDIR_PATH/generate_boot_entry.sh"
 refresh_entries() {
   init_check
 
-  local ENTRIESDIR_PATH="@ENTRIESDIR_PATH@"
+  local ENTRIESDIR_PATH="$ENTRIESDIR_PATH" # environment supplied var
   local ENTRIESDIR_NAME="@ENTRIESDIR_NAME@"
+
   local entriesdir="$ENTRIESDIR_PATH/$ENTRIESDIR_NAME"
 
   # clean up stale entries before rebuilding from what's on disk
