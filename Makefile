@@ -51,7 +51,7 @@ dist$(LIBDIR)/%.sh: src/lib/%.sh
 dist$(CMDDIR)/%.sh: src/cmd/%.sh
 	@mkdir -p $(dir $@)
 	$(SUBST) $< > $@
-	chmod 755 $@
+	chmod 644 $@
 
 $(HOOK_INSTALL_OUT): src/hooks/xbps/kernel/post_install.sh
 	@mkdir -p $(dir $@)
