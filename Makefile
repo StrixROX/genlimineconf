@@ -81,10 +81,11 @@ clean:
 install: all
 	cp -r dist/. $(DESTDIR)/
 
-# Mirrors install: removes exactly the files dist/ would place, then
-# prunes directories left empty. rmdir only succeeds on empty dirs, so
-# anything still holding user confs is left alone — except the entries
-# dir, which is generated state, not user data, so it's force-wiped.
+# Mirrors install: removes the files dist/ would place, then
+# prunes directories left empty. Does not touch user-generated
+# files (e.g., those in CONFDIR_PATH/CONFDIR_NAME) but
+# removes "CONFDIR_PATH/CONFDIR_NAME/options.conf" and
+# "ENTRIESDIR_PATH/ENTRIESDIR_NAME".
 uninstall: all
 	find dist -type f | sed 's|^dist||' | while read -r f; do rm -fv "$(DESTDIR)$$f"; done
 	rm -rf "$(DESTDIR)$(ENTRIESDIR_PATH)/$(ENTRIESDIR_NAME)"

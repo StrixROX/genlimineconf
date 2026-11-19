@@ -18,12 +18,17 @@ After that, `/etc/kernel.d/post-install` and `/etc/kernel.d/post-remove`
 hooks keep entries in sync automatically on every kernel
 install/remove via `xbps-reconfigure` — no manual steps needed.
 
-`generate` always backs up the existing `limine.conf` to `limine.conf.bak`
+Note: `generate` always backs up the existing `limine.conf` to `limine.conf.bak`
 before writing, and restores it automatically if generation fails.
 
 Custom Limine options are added by dropping `.conf` files into
 `$CONFDIR_PATH/$CONFDIR_NAME` — `generate` concatenates every file there,
 in lexical order, directly into the top of the generated `limine.conf`.
+
+Note: `options.conf` (the default file dropped there at install time) is
+removed by `make uninstall`. Put your own customizations in a **new**
+`.conf` file in that directory instead of editing `options.conf` directly,
+or they'll be deleted on uninstall.
 
 ## Commands
 
@@ -37,7 +42,16 @@ in lexical order, directly into the top of the generated `limine.conf`.
 ## Build
 
 ```
-make all         # builds dist/ — see Makefile for overridable build-time variables (PREFIX, KERNEL_NAME, etc.)
-make install     # installs dist/ onto the system (DESTDIR supported)
-make uninstall   # removes installed files; force-wipes entries/
+make            # same as `make all`
+make all        # builds dist/ — see Makefile for overridable build-time variables (PREFIX, KERNEL_NAME, etc.)
+make install    # installs dist/ onto the system (DESTDIR supported)
+make uninstall  # removes installed files; force-wipes entries/
+make clean      # removes dist/
 ```
+
+| Target | Depends on | Effect |
+|---|---|---|
+| `all` (default) | — | Builds every artifact into `dist/`: the `genlimineconf` binary, `lib/`, every subcommand, both kernel hooks, `options.conf`, and an empty entries dir — all substituted with the current build-time variables. Idempotent; only rebuilds what changed. |
+| `clean` | — | `rm -rf dist`. |
+| `install` | `all` | Copies `dist/` onto `$(DESTDIR)/` (or `/` if `DESTDIR` unset). |
+| `uninstall` | `all` | Rebuilds `dist/` to know the current file list, removes every file it would have installed, force-deletes the entries dir regardless of contents, then prunes any directories left empty (so directories still holding user `.conf` files survive). |
