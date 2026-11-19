@@ -36,11 +36,9 @@ HOOK_REMOVE_OUT  := dist$(KERNELHOOKDIR)/post-remove/100-genlimineconf
 
 STATIC_OUT := dist$(CONFDIR_PATH)/$(CONFDIR_NAME)/options.conf
 
-ENTRIESDIR_OUT := dist$(ENTRIESDIR_PATH)/$(ENTRIESDIR_NAME)
-
 .PHONY: all clean install uninstall
 
-all: $(MAIN_OUT) $(LIB_OUT) $(CMD_OUT) $(HOOK_INSTALL_OUT) $(HOOK_REMOVE_OUT) $(STATIC_OUT) $(ENTRIESDIR_OUT)
+all: $(MAIN_OUT) $(LIB_OUT) $(CMD_OUT) $(HOOK_INSTALL_OUT) $(HOOK_REMOVE_OUT) $(STATIC_OUT)
 
 $(MAIN_OUT): src/main.sh
 	@mkdir -p $(dir $@)
@@ -56,9 +54,6 @@ dist$(LIBEXECDIR)/%.sh: src/cmd/%.sh
 	@mkdir -p $(dir $@)
 	$(SUBST) $< > $@
 	chmod 755 $@
-
-$(ENTRIESDIR_OUT):
-	install -d $@
 
 $(HOOK_INSTALL_OUT): src/hooks/xbps/kernel/post_install.sh
 	@mkdir -p $(dir $@)
@@ -84,9 +79,7 @@ install: all
 # Mirrors install: removes the files dist/ would place, then
 # prunes directories left empty. Does not touch user-generated
 # files (e.g., those in CONFDIR_PATH/CONFDIR_NAME) but
-# removes "CONFDIR_PATH/CONFDIR_NAME/options.conf" and
-# "ENTRIESDIR_PATH/ENTRIESDIR_NAME".
+# removes "CONFDIR_PATH/CONFDIR_NAME/options.conf".
 uninstall: all
 	find dist -type f | sed 's|^dist||' | while read -r f; do rm -fv "$(DESTDIR)$$f"; done
-	rm -rf "$(DESTDIR)$(ENTRIESDIR_PATH)/$(ENTRIESDIR_NAME)"
 	find dist -type d | sort -r | sed 's|^dist||' | while read -r d; do rmdir "$(DESTDIR)$$d" 2>/dev/null || true; done
