@@ -25,9 +25,12 @@ Note: Some default options are provided in `/etc/genlimineconf/limine.conf.d/opt
 
 ## Commands
 
-| Command | Args | Effect on disk |
-|---|---|---|
-| `generate` | — | Scans `/boot` for kernels already present, and `/etc/genlimineconf/limine.conf.d` for user-defined Limine options to generate and replace the existing `limine.conf`. |
+| Command | Args | Required env | Output |
+|---|---|---|---|
+| `generate` | - | - | Scans `/boot` for kernels already present, and `/etc/genlimineconf/limine.conf.d` for user-defined Limine options to generate and replace the existing `limine.conf`. |
+| `refresh` | - | `$ENTRIESDIR` - must already exist | Deletes every `*.entry` file in `$ENTRIESDIR`, then scans `/boot` for `vmlinuz-*` and recreates an entry for each version via `add-entry`. |
+| `add-entry` | `<pkgname> <version>` | `$ENTRIESDIR` - must already exist | Writes `$ENTRIESDIR/<pkgname>_<version>.entry`, pointing at `/boot/vmlinuz-<version>` and `/boot/initramfs-<version>.img`. |
+| `remove-entry` | `<pkgname> <version>` | `$ENTRIESDIR` - must already exist | Deletes `$ENTRIESDIR/<pkgname>_<version>.entry` if it exists; errors out if it doesn't. |
 
 ## Build
 
@@ -40,14 +43,14 @@ make clean      # removes dist/
 
 | Target | Depends on | Effect |
 |---|---|---|
-| `all` (default) | — | Builds every artifact into `dist/`: the `genlimineconf` binary, `lib/`, both kernel hooks and `options.conf` - all substituted with the current build-time variables. Idempotent; only rebuilds what changed. |
-| `clean` | — | `rm -rf dist`. |
+| `all` (default) | - | Builds every artifact into `dist/`: the `genlimineconf` binary, `lib/`, all the subcommands in `cmd/`, both kernel hooks and `options.conf` - all substituted with the current build-time variables. Idempotent; only rebuilds what changed. |
+| `clean` | - | `rm -rf dist`. |
 | `install` | `all` | Copies `dist/` onto `$(DESTDIR)/` (or `/` if `DESTDIR` unset). Does not touch `$(DESTDIR)$(CONFDIR)`, if already present. |
-| `uninstall` | `all` | Removes installed files and dirs. Does not touch `$(DESTDIR)$(CONFDIR)`. |
+| `uninstall` | - | Removes installed files and dirs. Does not touch `$(DESTDIR)$(CONFDIR)`. |
 
 ## Testing
 
-`src/**/*.sh` are build templates, not runnable scripts — they contain
+`src/**/*.sh` are build templates, not runnable scripts - they contain
 literal `@VARNAME@` placeholders substituted by `make`. Sourcing them
 directly from `src/` gives you variables whose value is the literal string
 `@VARNAME@`, not a real path.
