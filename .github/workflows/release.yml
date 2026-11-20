@@ -32,6 +32,11 @@ jobs:
           sha256sum "${{ steps.archive.outputs.name }}" > "${{ steps.archive.outputs.name }}.sha256"
           echo "value=$(cut -d' ' -f1 "${{ steps.archive.outputs.name }}.sha256")" >> "$GITHUB_OUTPUT"
 
+      - name: Install xbps host tools
+        run: |
+          curl -fsSL https://repo-default.voidlinux.org/static/xbps-static-latest.x86_64-musl.tar.xz -o /tmp/xbps-static.tar.xz
+          sudo tar -xJf /tmp/xbps-static.tar.xz -C /
+
       - name: Build .xbps package
         id: xbps
         run: |
