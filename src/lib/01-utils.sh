@@ -10,13 +10,8 @@ init_check() {
   # in their intended places before any other commands/functions
   # get executed.
   #
-  # Note: ENTRIESDIR used to be a constant supplied at build
-  # time (pointing to `/var/lib/genlimineconf/entries`), but the
-  # entries were later re-targetted to `/tmp` using `mktemp -d`.
-  # So, ENTRIESDIR is not a runtime environment variable that
-  # needs to be supplied by the user/calling functions.
-  #
-  # TLDR: Always set $ENTRIESDIR env variable.
+  # Note: ENTRIESDIR can be supplied to any of the sub-commands
+  # to use a custom entries dir
   #
 
   check() {
@@ -37,7 +32,7 @@ init_check() {
     fi
 
     # check if $entriesdir exists
-    local ENTRIESDIR="$ENTRIESDIR" # environment supplied var
+    local ENTRIESDIR="${ENTRIESDIR:-@ENTRIESDIR@}" # environment supplied var
 
     if [ -z "$ENTRIESDIR" ]; then
       >&2 echo "Error: Unset environment variable: ENTRIESDIR"

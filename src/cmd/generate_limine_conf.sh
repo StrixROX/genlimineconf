@@ -8,20 +8,9 @@ source "$LIBDIR_PATH/01-utils.sh"
 source "$CMDDIR_PATH/refresh_entries.sh"
 
 generate_limine_conf() {
-  if [ -z "$ENTRIESDIR" ]; then
-    # create a temp dir for storing the entries
-    # (makefile gives the temp dir template)
-    local ENTRIESDIR="$(mktemp -d "@ENTRIESDIR_TMP@")"
+  init_check
 
-    # remove the entries dir when this function finishes
-    trap 'rm -rf "$ENTRIESDIR"' RETURN
-
-    # TODO: should prolly rename this to scan_for_kernels
-    # but this is technically correct too...
-    refresh_entries
-  else
-    init_check
-  fi
+  local ENTRIESDIR="${ENTRIESDIR:-@ENTRIESDIR@}" # environment supplied env
 
   if ! ls "$ENTRIESDIR"/*.entry >/dev/null 2>&1; then
     >&2 echo "Error: Missing: boot entries in: $ENTRIESDIR"

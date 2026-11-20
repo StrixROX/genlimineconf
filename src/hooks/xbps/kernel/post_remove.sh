@@ -13,5 +13,5 @@ if [ ! -x "$genlimineconf" ]; then
 	exit 0
 fi
 
-ENTRIESDIR="@ENTRIESDIR@" ${genlimineconf} remove-entry "@KERNEL_NAME@" "$VERSION"
-ENTRIESDIR="@ENTRIESDIR@" ${genlimineconf} generate
+${genlimineconf} remove-entry "@KERNEL_NAME@" "$VERSION"
+${genlimineconf} generate
