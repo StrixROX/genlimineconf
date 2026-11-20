@@ -7,6 +7,8 @@ after every kernel update by `xbps-reconfigure` in Void Linux (refer [this](http
 
 ## Installation
 
+### From source
+
 ```bash
 git clone https://github.com/StrixROX/genlimineconf.git
 cd genlimineconf
@@ -15,6 +17,24 @@ make install
 ```
 
 To remove it from the system, run `make uninstall` from the same directory.
+
+### From a released `.xbps` package
+
+Download the package from [releases](https://github.com/StrixROX/genlimineconf/releases),
+then index it locally so `xbps-install` can see it as a repository:
+
+```bash
+mkdir -p ~/myrepository && cd ~/myrepository
+curl -LO https://github.com/StrixROX/genlimineconf/releases/download/<tag>/genlimineconf-<version>_<revision>.<arch>.xbps
+xbps-rindex -a genlimineconf-<version>_<revision>.<arch>.xbps
+sudo xbps-install --repository=~/myrepository -u genlimineconf
+```
+
+Remove it the normal xbps way:
+
+```bash
+sudo xbps-remove genlimineconf
+```
 
 ## Usage
 

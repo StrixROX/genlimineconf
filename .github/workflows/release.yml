@@ -32,6 +32,19 @@ jobs:
           sha256sum "${{ steps.archive.outputs.name }}" > "${{ steps.archive.outputs.name }}.sha256"
           echo "value=$(cut -d' ' -f1 "${{ steps.archive.outputs.name }}.sha256")" >> "$GITHUB_OUTPUT"
 
+      - name: Build .xbps package
+        id: xbps
+        run: |
+          git clone --depth=1 https://github.com/void-linux/void-packages.git /tmp/void-packages
+          cd /tmp/void-packages
+          ./xbps-src binary-bootstrap
+          ln -s "$GITHUB_WORKSPACE/void-srcpkg/genlimineconf" srcpkgs/genlimineconf
+          ./xbps-src pkg genlimineconf
+
+          xbps_file="$(find hostdir/binpkgs -name 'genlimineconf-*.xbps' | head -n1)"
+          cp "$xbps_file" "$GITHUB_WORKSPACE/"
+          echo "xbps_name=$(basename "$xbps_file")" >> "$GITHUB_OUTPUT"
+
       - name: Create release
         uses: softprops/action-gh-release@v3
         with:
@@ -40,8 +53,9 @@ jobs:
           files: |
             ${{ steps.archive.outputs.name }}
             ${{ steps.archive.outputs.name }}.sha256
+            ${{ steps.xbps.outputs.xbps_name }}
           body: |
-            ## SHA256
+            ## SHA256 (source tarball)
 
             ```
             ${{ steps.checksum.outputs.value }}  ${{ steps.archive.outputs.name }}

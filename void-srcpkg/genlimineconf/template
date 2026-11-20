@@ -1,0 +1,15 @@
+# Template file for 'genlimineconf'
+pkgname=genlimineconf
+version=1.0.1
+revision=1
+build_style=gnu-makefile
+short_desc="Kernel hooks for updating Limine Bootloader config after kernel updates"
+maintainer="StrixROX"
+license="GPL-3.0-or-later"
+homepage="https://github.com/StrixROX/genlimineconf"
+changelog="https://github.com/StrixROX/genlimineconf/releases"
+hostmakedepends="make"
+depends="bash"
+distfiles="https://github.com/StrixROX/genlimineconf/archive/refs/tags/v${version}.tar.gz"
+checksum="9654fe20d563c4a8392120db86c87fdb4039cbf18699a1eee3adc1e366a2698f"
+conf_files="/etc/genlimineconf/limine.conf.d/options.conf"
