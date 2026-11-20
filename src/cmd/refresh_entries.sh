@@ -27,5 +27,5 @@ refresh_entries() {
   done
   shopt -u nullglob
 
-  echo "Info: Refreshed boot entries from: $bootdir"
+  echo "Info: Scanned boot entries from: $bootdir"
 }
