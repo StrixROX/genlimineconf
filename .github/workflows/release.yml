@@ -33,23 +33,14 @@ jobs:
           sha256sum "${{ steps.archive.outputs.name }}" > "${{ steps.archive.outputs.name }}.sha256"
           echo "value=$(cut -d' ' -f1 "${{ steps.archive.outputs.name }}.sha256")" >> "$GITHUB_OUTPUT"
 
-      - name: Install xbps host tools
+      - name: Generate srcpkg template
         run: |
-          curl -fsSL https://repo-default.voidlinux.org/static/xbps-static-latest.x86_64-musl.tar.xz -o /tmp/xbps-static.tar.xz
-          sudo tar -xJf /tmp/xbps-static.tar.xz -C /
+          version="${GITHUB_REF_NAME#v}"
+          src_url="https://github.com/StrixROX/genlimineconf/archive/refs/tags/${GITHUB_REF_NAME}.tar.gz"
+          checksum="$(curl -fsSL "$src_url" | sha256sum | cut -d' ' -f1)"
 
-      - name: Build .xbps package
-        id: xbps
-        run: |
-          git clone --depth=1 https://github.com/void-linux/void-packages.git /tmp/void-packages
-          cd /tmp/void-packages
-          ./xbps-src binary-bootstrap
-          ln -s "$GITHUB_WORKSPACE/void-srcpkg/genlimineconf" srcpkgs/genlimineconf
-          ./xbps-src pkg genlimineconf
-
-          xbps_file="$(find hostdir/binpkgs -name 'genlimineconf-*.xbps' | head -n1)"
-          cp "$xbps_file" "$GITHUB_WORKSPACE/"
-          echo "xbps_name=$(basename "$xbps_file")" >> "$GITHUB_OUTPUT"
+          sed -e "s/@VERSION@/$version/" -e "s/@CHECKSUM@/$checksum/" \
+            void-srcpkg/genlimineconf/template.in > dist/srcpkg_template
 
       - name: Create release
         uses: softprops/action-gh-release@v3
@@ -59,7 +50,7 @@ jobs:
           files: |
             ${{ steps.archive.outputs.name }}
             ${{ steps.archive.outputs.name }}.sha256
-            ${{ steps.xbps.outputs.xbps_name }}
+            dist/srcpkg_template
           body: |
             ## SHA256 (source tarball)
 
