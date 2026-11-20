@@ -19,7 +19,7 @@ generate_boot_entry() {
 
   init_check
 
-  local ENTRIESDIR="$ENTRIESDIR" # environment supplied var
+  local ENTRIESDIR="${ENTRIESDIR:-@ENTRIESDIR@}" # environment supplied var
 
   local entry="$ENTRIESDIR/${pkgname}_${version}.entry"
 

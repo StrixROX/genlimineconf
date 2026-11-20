@@ -40,10 +40,10 @@ Note: Some default options are provided in `/etc/genlimineconf/limine.conf.d/opt
 
 | Command | Args | Required env | Output |
 |---|---|---|---|
-| `generate` | - | - | Scans `/boot` for kernels already present, and `/etc/genlimineconf/limine.conf.d` for user-defined Limine options to generate and replace the existing `limine.conf`. |
-| `refresh` | - | `$ENTRIESDIR` - must already exist | Deletes every `*.entry` file in `$ENTRIESDIR`, then scans `/boot` for `vmlinuz-*` and recreates an entry for each version via `add-entry`. |
-| `add-entry` | `<pkgname> <version>` | `$ENTRIESDIR` - must already exist | Writes `$ENTRIESDIR/<pkgname>_<version>.entry`, pointing at `/boot/vmlinuz-<version>` and `/boot/initramfs-<version>.img`. |
-| `remove-entry` | `<pkgname> <version>` | `$ENTRIESDIR` - must already exist | Deletes `$ENTRIESDIR/<pkgname>_<version>.entry` if it exists; errors out if it doesn't. |
+| `generate` | - | `$ENTRIESDIR` (optional) | Scans `/boot` for kernels already present, and `/etc/genlimineconf/limine.conf.d` for user-defined Limine options to generate and replace the existing `limine.conf`. |
+| `scan` | - | `$ENTRIESDIR` | Deletes every `*.entry` file in `$ENTRIESDIR`, then scans `/boot` for `vmlinuz-*` and recreates an entry for each version via `add-entry`. |
+| `add-entry` | `<pkgname> <version>` | `$ENTRIESDIR` | Writes `$ENTRIESDIR/<pkgname>_<version>.entry`, pointing at `/boot/vmlinuz-<version>` and `/boot/initramfs-<version>.img`. |
+| `remove-entry` | `<pkgname> <version>` | `$ENTRIESDIR` | Deletes `$ENTRIESDIR/<pkgname>_<version>.entry` if it exists; errors out if it doesn't. |
 
 ## Build
 

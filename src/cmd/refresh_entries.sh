@@ -10,7 +10,7 @@ source "$CMDDIR_PATH/generate_boot_entry.sh"
 refresh_entries() {
   init_check
 
-  local ENTRIESDIR="$ENTRIESDIR" # environment supplied var
+  local ENTRIESDIR="${ENTRIESDIR:-@ENTRIESDIR@}" # environment supplied var
 
   # clean up stale entries before rebuilding from what's on disk
   rm -f "$ENTRIESDIR"/*.entry

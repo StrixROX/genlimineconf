@@ -17,7 +17,7 @@ case $cmd in
     source "$CMDDIR_PATH/generate_limine_conf.sh"
     generate_limine_conf "$@"
     ;;
-  refresh)
+  scan)
     source "$CMDDIR_PATH/refresh_entries.sh"
     refresh_entries "$@"
     ;;

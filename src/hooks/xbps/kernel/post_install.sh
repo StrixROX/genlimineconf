@@ -13,4 +13,5 @@ if [ ! -x "$genlimineconf" ]; then
 	exit 0
 fi
 
-${genlimineconf} generate
+ENTRIESDIR="@ENTRIESDIR@" ${genlimineconf} add-entry "@KERNEL_NAME@" "$VERSION"
+ENTRIESDIR="@ENTRIESDIR@" ${genlimineconf} generate
