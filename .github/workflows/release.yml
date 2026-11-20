@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build
+        run: make
+
+      - name: Create archive
+        id: archive
+        run: |
+          archive="genlimineconf-${{ github.ref_name }}.tar.gz"
+          tar -czvf "$archive" -C dist .
+          echo "name=$archive" >> "$GITHUB_OUTPUT"
+
+      - name: Compute checksum
+        id: checksum
+        run: |
+          sha256sum "${{ steps.archive.outputs.name }}" > "${{ steps.archive.outputs.name }}.sha256"
+          echo "value=$(cut -d' ' -f1 "${{ steps.archive.outputs.name }}.sha256")" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          files: |
+            ${{ steps.archive.outputs.name }}
+            ${{ steps.archive.outputs.name }}.sha256
+          body: |
+            ## SHA256
+
+            ```
+            ${{ steps.checksum.outputs.value }}  ${{ steps.archive.outputs.name }}
+            ```
