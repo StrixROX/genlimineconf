@@ -58,8 +58,8 @@ sudo xbps-remove genlimineconf
 On first install, run:
 
 ```bash
-genlimineconf scan        # scans /boot for kernels and stores entries for each of them
-genlimineconf generate    # generates limine.conf from the stored entries
+sudo genlimineconf scan        # scans /boot for kernels and stores entries for each of them
+sudo genlimineconf generate    # generates limine.conf from the stored entries
 ```
 
 After that, `/etc/kernel.d/post-install` and `/etc/kernel.d/post-remove`
