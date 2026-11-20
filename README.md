@@ -21,7 +21,8 @@ To remove it from the system, run `make uninstall` from the same directory.
 On first install, run:
 
 ```bash
-genlimineconf generate
+genlimineconf scan        # scans /boot for kernels and stores entries for each of them
+genlimineconf generate    # generates limine.conf from the stored entries
 ```
 
 After that, `/etc/kernel.d/post-install` and `/etc/kernel.d/post-remove`
@@ -38,12 +39,12 @@ Note: Some default options are provided in `/etc/genlimineconf/limine.conf.d/opt
 
 ## Commands
 
-| Command | Args | Required env | Output |
+| Command | Args | Env Vars | Output |
 |---|---|---|---|
-| `generate` | - | - | Scans `/boot` for kernels already present, and `/etc/genlimineconf/limine.conf.d` for user-defined Limine options to generate and replace the existing `limine.conf`. |
-| `refresh` | - | `$ENTRIESDIR` - must already exist | Deletes every `*.entry` file in `$ENTRIESDIR`, then scans `/boot` for `vmlinuz-*` and recreates an entry for each version via `add-entry`. |
-| `add-entry` | `<pkgname> <version>` | `$ENTRIESDIR` - must already exist | Writes `$ENTRIESDIR/<pkgname>_<version>.entry`, pointing at `/boot/vmlinuz-<version>` and `/boot/initramfs-<version>.img`. |
-| `remove-entry` | `<pkgname> <version>` | `$ENTRIESDIR` - must already exist | Deletes `$ENTRIESDIR/<pkgname>_<version>.entry` if it exists; errors out if it doesn't. |
+| `generate` | - | `$ENTRIESDIR` (optional) | Scans `/boot` for kernels already present, and `/etc/genlimineconf/limine.conf.d` for user-defined Limine options to generate and replace the existing `limine.conf`. |
+| `scan` | - | `$ENTRIESDIR` (optional) | Deletes every `*.entry` file in `$ENTRIESDIR`, then scans `/boot` for `vmlinuz-*` and recreates an entry for each version via `add-entry`. |
+| `add-entry` | `<pkgname> <version>` | `$ENTRIESDIR` (optional) | Writes `$ENTRIESDIR/<pkgname>_<version>.entry`, pointing at `/boot/vmlinuz-<version>` and `/boot/initramfs-<version>.img`. |
+| `remove-entry` | `<pkgname> <version>` | `$ENTRIESDIR` (optional) | Deletes `$ENTRIESDIR/<pkgname>_<version>.entry` if it exists; errors out if it doesn't. |
 
 ## Build
 
@@ -56,7 +57,7 @@ make clean      # removes dist/
 
 | Target | Depends on | Effect |
 |---|---|---|
-| `all` (default) | - | Builds every artifact into `dist/`: the `genlimineconf` binary, `lib/`, all the subcommands in `cmd/`, both kernel hooks and `options.conf` - all substituted with the current build-time variables. Idempotent; only rebuilds what changed. |
+| `all` (default) | - | Builds every artifact into `dist/`: the `genlimineconf` binary, entries dir, `lib/`, all the subcommands in `cmd/`, both kernel hooks and `options.conf` - all substituted with the current build-time variables. Idempotent; only rebuilds what changed. |
 | `clean` | - | `rm -rf dist`. |
 | `install` | `all` | Copies `dist/` onto `$(DESTDIR)/` (or `/` if `DESTDIR` unset). Does not touch `$(DESTDIR)$(CONFDIR)`, if already present. |
 | `uninstall` | - | Removes installed files and dirs. Does not touch `$(DESTDIR)$(CONFDIR)`. |

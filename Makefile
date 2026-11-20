@@ -5,7 +5,8 @@ CMDDIR          ?= $(PREFIX)/libexec/genlimineconf
 LIBDIR          ?= $(CMDDIR)/lib
 KERNELHOOKDIR   ?= /etc/kernel.d
 CONFDIR         ?= /etc/genlimineconf/limine.conf.d
-ENTRIESDIR      ?= /tmp/genlimineconf-XXXXXX
+ENTRIESDIR      ?= /var/lib/genlimineconf
+ENTRIESDIR_TMP  ?= /tmp/genlimineconf-XXXXXX
 KERNEL_NAME     ?= linux
 KERNEL_PATH     ?=
 
@@ -19,13 +20,16 @@ SUBST = sed -e 's|@LIBDIR_PATH@|$(LIBDIR)|g' \
             -e 's|@KERNEL_NAME@|$(KERNEL_NAME)|g' \
             -e 's|@KERNEL_PATH@|$(KERNEL_PATH)|g' \
             -e 's|@CONFDIR@|$(CONFDIR)|g' \
-            -e 's|@ENTRIESDIR@|$(ENTRIESDIR)|g'
+            -e 's|@ENTRIESDIR@|$(ENTRIESDIR)|g' \
+            -e 's|@ENTRIESDIR_TMP@|$(ENTRIESDIR_TMP)|g'
 
 LIB_SRC := $(wildcard src/lib/*.sh)
 LIB_OUT := $(patsubst src/lib/%,dist$(LIBDIR)/%,$(LIB_SRC))
 
 CMD_SRC := $(wildcard src/cmd/*.sh)
 CMD_OUT := $(patsubst src/cmd/%,dist$(CMDDIR)/%,$(CMD_SRC))
+
+ENTRIES_OUT := dist$(ENTRIESDIR)
 
 MAIN_OUT := dist$(BINDIR)/genlimineconf
 
@@ -36,7 +40,7 @@ STATIC_OUT := dist$(CONFDIR)/options.conf
 
 .PHONY: all clean install uninstall
 
-all: $(MAIN_OUT) $(LIB_OUT) $(CMD_OUT) $(HOOK_INSTALL_OUT) $(HOOK_REMOVE_OUT) $(STATIC_OUT)
+all: $(MAIN_OUT) $(LIB_OUT) $(CMD_OUT) $(HOOK_INSTALL_OUT) $(HOOK_REMOVE_OUT) $(STATIC_OUT) $(ENTRIES_OUT)
 
 $(MAIN_OUT): src/main.sh
 	@mkdir -p $(dir $@)
@@ -52,6 +56,9 @@ dist$(CMDDIR)/%.sh: src/cmd/%.sh
 	@mkdir -p $(dir $@)
 	$(SUBST) $< > $@
 	chmod 644 $@
+
+$(ENTRIES_OUT):
+	install -d $@
 
 $(HOOK_INSTALL_OUT): src/hooks/xbps/kernel/post_install.sh
 	@mkdir -p $(dir $@)
