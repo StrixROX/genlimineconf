@@ -18,15 +18,32 @@ make install
 
 To remove it from the system, run `make uninstall` from the same directory.
 
-### From a released `.xbps` package
+### Via XBPS (`srcpkg_template`)
 
-Download the package from [releases](https://github.com/StrixROX/genlimineconf/releases),
-then index it locally so `xbps-install` can see it as a repository:
+Each [release](https://github.com/StrixROX/genlimineconf/releases) ships a ready-to-use
+`xbps-src` template (`srcpkg_template`) instead of a prebuilt `.xbps` (since GitHub
+doesn't support Void runners), so the package gets built locally against your own system.
+Requires a [`void-packages`](https://github.com/void-linux/void-packages) checkout:
 
 ```bash
-mkdir -p ~/myrepository && cd ~/myrepository
-curl -LO https://github.com/StrixROX/genlimineconf/releases/download/<tag>/genlimineconf-<version>_<revision>.<arch>.xbps
-xbps-rindex -a genlimineconf-<version>_<revision>.<arch>.xbps
+git clone --depth=1 https://github.com/void-linux/void-packages.git
+cd void-packages
+./xbps-src binary-bootstrap
+
+curl -LO https://github.com/StrixROX/genlimineconf/releases/download/<tag>/srcpkg_template # or download srcpkg_template file from the latest release
+mkdir -p srcpkgs/genlimineconf
+mv srcpkg_template srcpkgs/genlimineconf/template
+
+./xbps-src pkg genlimineconf
+```
+
+This produces a `.xbps` package at `void-packages/hostdir/binpkgs/`. Index it into a
+local repository so `xbps-install` can see it:
+
+```bash
+mkdir -p ~/myrepository
+cp void-packages/hostdir/binpkgs/genlimineconf-*.xbps ~/myrepository/
+xbps-rindex -a ~/myrepository/genlimineconf-*.xbps
 sudo xbps-install --repository=~/myrepository -u genlimineconf
 ```
 
