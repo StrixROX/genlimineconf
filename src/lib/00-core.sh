@@ -8,12 +8,32 @@ get_limine_conf_path() {
 
   local filename='limine.conf'
 
-  local search_paths=(
+  local universal_paths=(
     '/boot/limine'
     '/boot'
     '/limine'
     '/'
   )
+
+  local efi_paths=(
+    '/boot/efi/EFI/BOOT'
+    '/boot/efi/EFI/Limine'
+    '/boot/EFI/BOOT'
+    '/boot/EFI/Limine'
+    '/efi/EFI/BOOT'
+    '/efi/EFI/Limine'
+    '/EFI/BOOT'
+    '/EFI/Limine'
+  )
+
+  local search_paths
+
+  # Check if system is UEFI or BIOS
+  if [ -d /sys/firmware/efi ]; then
+    search_paths=("${efi_paths[@]}" "${universal_paths[@]}")
+  else
+    search_paths=("${universal_paths[@]}")
+  fi
 
   local path
   for path in "${search_paths[@]}"; do
@@ -23,7 +43,7 @@ get_limine_conf_path() {
     fi
   done
 
-  >&2 echo "Error: Missing: limine.conf"
+  >&2 echo "Error: Not found: limine.conf"
   return 1
 }
 
