@@ -52,7 +52,7 @@ jobs:
             ${{ steps.archive.outputs.name }}.sha256
             dist/srcpkg_template
           body: |
-            ## SHA256 (source tarball)
+            ## SHA256 (dist tarball)
 
             ```
             ${{ steps.checksum.outputs.value }}  ${{ steps.archive.outputs.name }}
